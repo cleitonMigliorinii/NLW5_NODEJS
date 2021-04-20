@@ -60,3 +60,114 @@ Para executar o projeto
 ```bash
 yarn dev
 ```
+# Aula 02 - Iniciando com banco de dados
+
+-- Banco relacional
+-- Nnex.js  / TypeOrm / Sequelize ORM
+
+## Configurando o TypeORM
+
+Inicializar o [TypeORM](https://typeorm.io/#/)
+
+```bash
+yarn add typeorm 
+```
+
+```bash
+yarn add reflect-metadata 
+```
+
+```bash
+yarn add sqllite3
+```
+
+Criar o arquivo ormconfig.json para configurar o tipo do banco,
+qual a database, onde estao localizados os migrations e as entidades.
+
+## migrations
+
+Criar uma migration, as migrations ajudam na criação e manutenção de bases
+de dados, facilita a vida quando tem uma equipe envolvida, masss, trabalhando solo
+também tem varias vantagens
+
+```bash
+yarn typeorm migration:create -n CreateSettigns
+```
+
+Run [migrations](https://typeorm.io/#/migrations)
+
+comando run : executa o metodo up dentro da migration, básicamente serve para atualizar ou criar um novo ponto na base.
+
+```bash
+yarn typeorm migration:run
+```
+
+comando revert : executa o metodo down dentro da migration, neste metodo pode ser adicionado operacoes como mudança (update) (drop), insertion, básicamente código para voltar a versão.
+```bash
+yarn typeorm migration:revert
+```
+
+# Controlar uuid no projeto
+
+```bash
+yarn add uuid
+yarn add @types/uuid -D
+```
+
+# Repositories
+
+Básicamente a ideia eh ser a comunicação entre base e controller, vai extender o Repositorio do TypeOrm
+
+```ts
+@EntityRepository(Setting)
+class SettingsRepository extends Repository<Setting> {
+}
+```
+
+
+# Controllers
+
+Básicamente var sera a camada que vai intermediar o repositorio com as Routes
+
+```ts
+import { Request, Response } from "express";
+import { getCustomRepository } from "typeorm";
+import { SettingsRepository } from "../repositories/SettingsRepository";
+
+class SettingsControllers {
+
+    async create(request: Request, response: Response){
+        const {chat, username} = request.body;
+        const settingsRepository = getCustomRepository(SettingsRepository);
+    
+        const settings = settingsRepository.create({
+            chat, 
+            username
+        });
+    
+        await settingsRepository.save(settings);
+    
+        return response.json(settings);
+    }
+
+}
+
+export { SettingsControllers }
+```
+
+# routes.ts
+
+Vai indicar todas as rotas possiveis, cria as rotas para ser consumidas
+
+```ts
+import { Router } from "express";
+import { SettingsControllers } from "./controllers/SettingsControllers";
+
+const routes = Router();
+
+const settingsControllers = new SettingsControllers();
+
+routes.post("/settings", settingsControllers.create);
+
+export { routes };
+```

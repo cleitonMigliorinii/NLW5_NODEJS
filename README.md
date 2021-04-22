@@ -171,3 +171,42 @@ routes.post("/settings", settingsControllers.create);
 
 export { routes };
 ```
+
+# Aula 02 - Continuação da aplicação
+
+Nesta aula criamos as migrations de User, Messagens.
+
+Também foi visto como criar uma Foren Key
+
+Na migration 
+
+```ts
+foreignKeys: [
+                {
+                    name: "FKUser",
+                    referencedTableName : "users",
+                    referencedColumnNames: ["id"],
+                    columnNames : ["user_id"],
+                    onDelete : "SET NULL",
+                    onUpdate : "SET NULL"
+                }
+            ]
+```
+
+Na entities
+```ts
+    @JoinColumn( { name: "user_id" })
+    @ManyToOne( () => User)
+    user: User;
+```
+
+Para recuperar os dados de uma fk utiliza-se o relations :
+```ts
+    const list = await this.messagesRepository.find({
+            where: {user_id},
+            relations: ["user"]
+    })
+
+    return list;
+```
+ 

@@ -172,7 +172,7 @@ routes.post("/settings", settingsControllers.create);
 export { routes };
 ```
 
-# Aula 02 - Continuação da aplicação
+# Aula 03 - Continuação da aplicação
 
 Nesta aula criamos as migrations de User, Messagens.
 
@@ -209,4 +209,39 @@ Para recuperar os dados de uma fk utiliza-se o relations :
 
     return list;
 ```
- 
+ # Aula 03 - Websocket
+
+## Protocolo HTTP
+
+Cliente -> Requisição / Aguardando -> Servidor
+
+1 conexão por Request, quando existe a resposta a conexão vai fechar, em outras palavras a vida da requisição em um protocolo http e durante a request.
+
+## Websocket
+
+Cliente -> Conectar -> Servidor
+
+Quando o cliente conecta no servidor a conexão vai exister até que o cliente se desconecte do servidor, em outras palavras a conexão vai ficar aberta todo tempo.
+
+Bi-direcional, ou seja, qualquer um dos dois (Client/Service) pode enviar dados.
+
+Utiliza o ID do socket para continuar a conexão.
+
+[socket.io](https://socket.io)
+```bash
+yarn add socket.io
+yarn add @types/socket.io -D
+yarn add socket.io-client
+yarn add ejsy
+```
+
+server.ts
+
+```ts
+import { createServer } from "http";
+import { Server, Socket } from "socket.io";
+...
+
+const http = createServer(app); // Criando protocolo http
+const io = new Server(http); // Criando protocolo Websocket
+```
